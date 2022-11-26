@@ -8,7 +8,7 @@ const stripeRoute = require("./stripe.route");
 const verifyJWT = require("../middlewares/verifyJWT");
 
 router.use("/auth", authRoute);
-router.use("/users",verifyJWT, userRoute);
+router.use("/users", verifyJWT, userRoute);
 router.use("/products", verifyJWT, productRoute);
 router.use("/carts", verifyJWT, cartRoute);
 router.use("/orders", verifyJWT, orderRoute);

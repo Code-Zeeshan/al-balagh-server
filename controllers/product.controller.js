@@ -1,9 +1,18 @@
 const Product = require("../models/product.model.js");
 const ApiError = require("../utils/ApiError");
+const cloudinary = require("../config/cloudinary");
+const streamifier = require('streamifier');
+const uploadToCloudinary = require("../utils/uploadToCloundinary");
 
 
 exports.addOne = async (req, res, next) => {
-  const newProduct = new Product(req.body);
+  const jsonData = req.body;
+  if (req.files?.img) {
+    const result = await uploadToCloudinary(req.files.img.data, "images");
+    jsonData.imageURL = result.secure_url;
+    jsonData.cloudinaryId = result.public_id;
+  }
+  const newProduct = new Product(jsonData);
   const savedProduct = await newProduct.save();
   res.status(200).json(savedProduct);
 }
