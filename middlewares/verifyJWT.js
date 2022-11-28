@@ -11,7 +11,7 @@ const verifyJWT = (req, res, next) => {
         process.env.ACCESS_TOKEN_SECRET,
         (err, decoded) => {
             if (err) return next(ApiError.forbidden()); //invalid token
-            req.user = decoded.username;
+            req.user = decoded.userInfo;
             next();
         }
     );

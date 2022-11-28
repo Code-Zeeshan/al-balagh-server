@@ -15,13 +15,13 @@ exports.login = async (req, res, next) => {
         // create JWTs
         const accessToken = jwt.sign(
             {
-                UserInfo: {
+                userInfo: {
                     email: foundUser.email,
                     role: foundUser.role
                 }
             },
             CONFIG.TOKEN.ACCESS,
-            { expiresIn: '10s' }
+            { expiresIn: '1h' }
         );
         const refreshToken = jwt.sign(
             { "email": foundUser.email },
@@ -100,13 +100,13 @@ exports.handleRefreshToken = async (req, res, next) => {
             if (err || foundUser.email !== decoded.email) return next(ApiError.forbidden());
             const accessToken = jwt.sign(
                 {
-                    UserInfo: {
+                    userInfo: {
                         email: foundUser.email,
                         role: foundUser.role
                     }
                 },
                 CONFIG.TOKEN.ACCESS,
-                { expiresIn: '10s' }
+                { expiresIn: '1h' }
             );
             res.status(200).send({
                 role: foundUser.role,

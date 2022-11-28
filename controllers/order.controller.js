@@ -2,7 +2,19 @@ const Order = require("../models/order.model.js");
 const ApiError = require("../utils/ApiError");
 
 exports.addOne = async (req, res, next) => {
-    const newOrder = new Order(req.body);
+    const {
+        count,
+        products,
+        userId,
+        amount
+    } = req.body;
+    const newOrder = new Order({
+        count,
+        products,
+        userId,
+        address,
+        amount
+    });
     const savedOrder = await newOrder.save();
     res.status(200).json(savedOrder);
 }
