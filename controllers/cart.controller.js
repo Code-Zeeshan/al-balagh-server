@@ -5,7 +5,6 @@ const ApiError = require("../utils/ApiError");
 
 exports.addOne = async (req, res, next) => {
     const { productId, count } = req.body;
-    console.log("req.body", req.body);
     const user = await User.findOne({ email: req.user.email }, { _id: 1 });
     // const update = {
     //     $addToSet: {
@@ -58,7 +57,6 @@ exports.addOne = async (req, res, next) => {
 
 
 exports.updateOne = async (req, res, next) => {
-    console.log("req", req.body);
     const { userId, count, productId } = req.body;
     const filter = { userId, "products.productId": productId };
     let update = {

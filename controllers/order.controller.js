@@ -48,8 +48,84 @@ exports.findByUser = async (req, res, next) => {
 // //GET ALL
 
 exports.findMany = async (req, res, next) => {
-    const orders = await Order.find();
-    res.status(200).json(orders);
+    // const orders = await Order.find();
+    const orders = await Order.aggregate([
+        // { $match: { createdAt: { $gte: previousMonth } } },
+        {
+            $unwind: "$products"
+        },
+        // {
+        //     $lookup: {
+        //         from: "products",
+        //         let: { product_id: "$products.productId" },
+        //         pipeline: [
+        //             {
+        //                 $match: {
+        //                     $expr: {
+        //                         $eq: ["$$product_id", "$_id"]
+        //                     }
+        //                 }
+        //             },
+        //             {
+        //                 $project: {
+        //                     imageURL: 1,
+        //                     quantity: "$products.quantity"
+        //                 }
+        //             }
+        //         ],
+        //         as: "products"
+        //     }
+        // },
+        // {
+        //     $lookup: {
+        //         from: "users",
+        //         let: { userId: "$userId" },
+        //         pipeline: [
+        //             {
+        //                 $match: {
+        //                     $expr: {
+        //                         $eq: ["$$userId", "$_id"]
+        //                     }
+        //                 }
+        //             },
+        //             {
+        //                 $project: {
+        //                     name: 1
+        //                 }
+        //             }
+        //         ],
+        //         as: "userId"
+        //     }
+        // },
+        // {
+        //     $addFields: {
+        //         userId: {
+        //             $arrayElemAt: ["$userId", 0]
+        //         }
+        //     }
+        // },
+        // {
+        //     $project: {
+        //         // month: { $month: "$createdAt" },
+        //         userId: "$userId.name",
+        //         address: "$userId.address",
+        //         products: {
+        //             imageURL: "$products.imageURL",
+        //             quantity: "$products.quantity"
+        //         },
+        //         amount: 1,
+        //         status: 1
+        //     }
+        // },
+        // {
+        //     $group: {
+        //         _id: "$month",
+        //         total: { $sum: "$sales" },
+        //     },
+        // },
+    ]);
+    console.log("order", JSON.stringify(orders, 0, 4));
+    // res.status(200).json(orders);
 }
 
 // GET MONTHLY INCOME
