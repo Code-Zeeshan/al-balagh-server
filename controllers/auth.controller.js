@@ -72,7 +72,14 @@ exports.logout = async (req, res, next) => {
 }
 
 exports.register = async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const {
+        name,
+        email,
+        password,
+        address,
+        city,
+        contact
+    } = req.body;
     console.log(req.body);
     if (!email || !password) return next(ApiError.badRequest('Username and password are required.'));
     // check for duplicate usernames in the db
@@ -81,7 +88,14 @@ exports.register = async (req, res, next) => {
     //encrypt the password
     const hashedPassword = await bcrypt.hash(password, 10);
     //store the new user
-    const newUser = await User.create({ name, email, "password": hashedPassword });
+    const newUser = await User.create({
+        name,
+        email,
+        address,
+        city,
+        contact,
+        "password": hashedPassword
+    });
     res.status(201).json({ 'success': `New user ${newUser} created!` });
 }
 
