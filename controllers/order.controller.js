@@ -54,78 +54,106 @@ exports.findMany = async (req, res, next) => {
         {
             $unwind: "$products"
         },
-        // {
-        //     $lookup: {
-        //         from: "products",
-        //         let: { product_id: "$products.productId" },
-        //         pipeline: [
-        //             {
-        //                 $match: {
-        //                     $expr: {
-        //                         $eq: ["$$product_id", "$_id"]
-        //                     }
-        //                 }
-        //             },
-        //             {
-        //                 $project: {
-        //                     imageURL: 1,
-        //                     quantity: "$products.quantity"
-        //                 }
-        //             }
-        //         ],
-        //         as: "products"
-        //     }
-        // },
-        // {
-        //     $lookup: {
-        //         from: "users",
-        //         let: { userId: "$userId" },
-        //         pipeline: [
-        //             {
-        //                 $match: {
-        //                     $expr: {
-        //                         $eq: ["$$userId", "$_id"]
-        //                     }
-        //                 }
-        //             },
-        //             {
-        //                 $project: {
-        //                     name: 1
-        //                 }
-        //             }
-        //         ],
-        //         as: "userId"
-        //     }
-        // },
-        // {
-        //     $addFields: {
-        //         userId: {
-        //             $arrayElemAt: ["$userId", 0]
-        //         }
-        //     }
-        // },
-        // {
-        //     $project: {
-        //         // month: { $month: "$createdAt" },
-        //         userId: "$userId.name",
-        //         address: "$userId.address",
-        //         products: {
-        //             imageURL: "$products.imageURL",
-        //             quantity: "$products.quantity"
-        //         },
-        //         amount: 1,
-        //         status: 1
-        //     }
-        // },
-        // {
-        //     $group: {
-        //         _id: "$month",
-        //         total: { $sum: "$sales" },
-        //     },
-        // },
+        {
+            $lookup: {
+                from: "products",
+                let: { product_id: "$products.productId", quantity: "$products.quantity" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$$product_id", "$_id"]
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            title: 1,
+                            imageURL: 1,
+                            price: 1,
+                            quantity: "$$quantity"
+                        }
+                    }
+                ],
+                as: "products"
+            }
+        },
+        {
+            $addFields: {
+                products: {
+                    $arrayElemAt: ["$products", 0]
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                let: { userId: "$userId" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$$userId", "$_id"]
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            name: 1,
+                            email: 1,
+                            city: 1
+                        }
+                    }
+                ],
+                as: "userId"
+            }
+        },
+        {
+            $addFields: {
+                userId: {
+                    $arrayElemAt: ["$userId", 0]
+                }
+            }
+        },
+        {
+            $project: {
+                // month: { $month: "$createdAt" },
+                userId: "$userId._id",
+                name: "$userId.name",
+                address: "$userId.address",
+                email: "$userId.email",
+                city: "$userId.city",
+                products: {
+                    imageURL: "$products.imageURL",
+                    quantity: "$products.quantity",
+                    title: "$products.title",
+                    price: "$products.price"
+                },
+                amount: 1,
+                status: 1
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    userId: "$userId",
+                    name: "$name",
+                    address: "$address",
+                    email: "$email",
+                    city: "$city"
+                },
+                orders: {
+                    $addToSet: {
+                        products: "$products",
+                        // userId: "$userId._id",
+                    }
+                },
+                total: { $sum: "$amount" }
+            },
+        },
     ]);
-    console.log("order", JSON.stringify(orders, 0, 4));
-    // res.status(200).json(orders);
+    console.log(JSON.stringify(orders, 0, 4));
+    res.status(200).json(orders);
 }
 
 // GET MONTHLY INCOME
