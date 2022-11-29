@@ -1,4 +1,5 @@
 const Order = require("../models/order.model.js");
+const User = require("../models/user.model.js");
 const ApiError = require("../utils/ApiError");
 
 exports.addOne = async (req, res, next) => {
@@ -8,6 +9,7 @@ exports.addOne = async (req, res, next) => {
         userId,
         amount
     } = req.body;
+    const { address } = await User.findById(userId, { address: 1 });
     const newOrder = new Order({
         count,
         products,
