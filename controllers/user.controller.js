@@ -27,9 +27,9 @@ exports.deleteOne = async (req, res, next) => {
 }
 
 exports.findOne = async (req, res, next) => {
-    const user = await User.findById(req.params.id);
-    const { password, ...others } = user._doc;
-    res.status(200).json(others);
+    const user = await User.findOne({ email: req.user.email });
+    // const { password, ...others } = user._doc;
+    res.status(200).json(user);
 }
 
 exports.findMany = async (req, res, next) => {
