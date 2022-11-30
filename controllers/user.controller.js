@@ -22,7 +22,7 @@ exports.updateOne = async (req, res, next) => {
 }
 
 exports.deleteOne = async (req, res, next) => {
-    await User.findByIdAndDelete(req.params.id);
+    await User.findByIdAndDelete(req.query.params);
     res.status(200).json("User has been deleted...");
 }
 
