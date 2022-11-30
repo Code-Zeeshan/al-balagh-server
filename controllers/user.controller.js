@@ -18,7 +18,6 @@ exports.updateOne = async (req, res, next) => {
     //     req.body.password,
     //     process.env.PASS_SEC
     // ).toString();
-    console.log("req", req.body);
     const foundUser = await User.findOne({ email: req.user.email });
     if (oldPassword) {
         const match = await bcrypt.compare(oldPassword, foundUser.password);
@@ -60,7 +59,6 @@ exports.updateOne = async (req, res, next) => {
     //     ],
     //     { new: true }
     // );
-    console.log("update", foundUser);
     res.status(200).json(foundUser);
 }
 
