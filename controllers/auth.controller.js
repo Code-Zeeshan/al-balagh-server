@@ -42,6 +42,7 @@ exports.login = async (req, res, next) => {
 
         // Send authorization roles and access token to user
         res.status(200).send({
+            _id: foundUser._id,
             role: foundUser.role,
             accessToken
         },
@@ -123,6 +124,7 @@ exports.handleRefreshToken = async (req, res, next) => {
                 { expiresIn: '1h' }
             );
             res.status(200).send({
+                _id: foundUser._id,
                 role: foundUser.role,
                 accessToken
             });
