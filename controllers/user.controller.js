@@ -5,20 +5,63 @@ const jwt = require('jsonwebtoken');
 const CONFIG = require("../config");
 
 exports.updateOne = async (req, res, next) => {
-    if (req.body.password) {
-        req.body.password = CryptoJS.AES.encrypt(
-            req.body.password,
-            process.env.PASS_SEC
-        ).toString();
+    const {
+        oldPassword,
+        password,
+        name,
+        address,
+        contact,
+        city
+    } = req.body
+    // if (req.body.oldPassword) {
+    // req.body.password = CryptoJS.AES.encrypt(
+    //     req.body.password,
+    //     process.env.PASS_SEC
+    // ).toString();
+    console.log("req", req.body);
+    const foundUser = await User.findOne({ email: req.user.email });
+    if (oldPassword) {
+        const match = await bcrypt.compare(oldPassword, foundUser.password);
+        if (match) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            foundUser.password = hashedPassword;
+        }
+        else {
+            return next(ApiError.badRequest('Old password incorrect.'));
+        }
     }
-    const updatedUser = await User.findByIdAndUpdate(
-        req.params.id,
-        {
-            $set: req.body,
-        },
-        { new: true }
-    );
-    res.status(200).json(updatedUser);
+    foundUser.name = name;
+    foundUser.address = address;
+    foundUser.contact = contact;
+    foundUser.city = city;
+    await foundUser.save();
+
+    // }
+    // const updatedUser = await User.updateOne(
+    //     { email: req.user.email },
+    //     [
+    //         {
+    //             $set: {
+    //                 password: {
+    //                     $cond: {
+    //                         if: {
+    //                             $eq: [hashedPassword, "$password"],
+    //                         },
+    //                         then: password,
+    //                         else: "$password"
+    //                     }
+    //                 },
+    //                 name,
+    //                 address,
+    //                 contact,
+    //                 city
+    //             }
+    //         }
+    //     ],
+    //     { new: true }
+    // );
+    console.log("update", foundUser);
+    res.status(200).json(foundUser);
 }
 
 exports.deleteOne = async (req, res, next) => {
