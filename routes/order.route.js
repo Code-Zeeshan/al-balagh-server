@@ -7,6 +7,7 @@ router.route("/updateOne").put(exceptionHandler(controller.updateOne));
 router.route("/deleteOne").delete(exceptionHandler(controller.deleteOne));
 router.route("/findByUser").get(exceptionHandler(controller.findByUser));
 router.route("/findMany").get(exceptionHandler(controller.findMany));
+router.route("/dispatchEmail").post(exceptionHandler(controller.dispatchEmail));
 router.route("/getIncome").get(exceptionHandler(controller.getIncome));
 
 module.exports = router;

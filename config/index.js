@@ -14,4 +14,9 @@ module.exports = Object.freeze({
         API_KEY: process.env.CLOUDINARY_API_KEY,
         API_SECRET: process.env.CLOUDINARY_API_SECRET,
     }),
+    EMAIL: Object.freeze({
+        SERVICE: process.env.EMAIL_SERVICE,
+        USER: process.env.EMAIL_USER,
+        PASSWORD: process.env.EMAIL_PASSWORD
+    }),
 });

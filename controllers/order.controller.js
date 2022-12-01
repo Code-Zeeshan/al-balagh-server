@@ -1,6 +1,7 @@
 const Order = require("../models/order.model.js");
 const User = require("../models/user.model.js");
 const ApiError = require("../utils/ApiError");
+const sendEmail = require("../utils/sendEmail");
 
 exports.addOne = async (req, res, next) => {
     const {
@@ -154,6 +155,24 @@ exports.findMany = async (req, res, next) => {
     ]);
     console.log(JSON.stringify(orders, 0, 4));
     res.status(200).json(orders);
+}
+
+exports.dispatchEmail = async (req, res, next) => {
+    const { state, name, email } = req.body;
+    // const { name, email } = await User.findById(userId, { email: 1, name: 1 });
+
+    const subject = `Order ${state}`;
+    const body = `Dear ${name},<br>
+                Your order has been ${state}`;
+    await sendEmail(
+        "m.zeeshanstudent@gmail.com",
+        subject,
+        body,
+        null,
+        []
+    );
+
+    res.status(200).json({ message: "Email Sent successfully" });
 }
 
 // GET MONTHLY INCOME
