@@ -165,7 +165,7 @@ exports.dispatchEmail = async (req, res, next) => {
     const body = `Dear ${name},<br>
                 Your order has been ${state}`;
     await sendEmail(
-        "m.zeeshanstudent@gmail.com",
+        email,
         subject,
         body,
         null,
