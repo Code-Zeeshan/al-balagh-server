@@ -10,6 +10,11 @@ function sendEmail(
 ) {
     return new Promise((resolve, reject) => {
         try {
+            console.log(
+                recipientEmail,
+                subject,
+                body,
+            );
             // if (Array.isArray(recipientEmail)) {
             //     const promises = [];
             //     recipientEmail.forEach(function (email) {
@@ -73,7 +78,6 @@ function sendEmailSingle(
             if (error) {
                 reject(error);
             } else {
-                // logger(2, "Email sent to: " + recipientEmail);
                 resolve(info);
             }
         });

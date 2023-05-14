@@ -66,7 +66,6 @@ exports.logout = async (req, res, next) => {
     // Delete refreshToken in db
     foundUser.refreshToken = '';
     const result = await foundUser.save();
-    console.log(result);
 
     res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
     res.sendStatus(204);
@@ -81,7 +80,6 @@ exports.register = async (req, res, next) => {
         city,
         contact
     } = req.body;
-    console.log(req.body);
     if (!email || !password) return next(ApiError.badRequest('Username and password are required.'));
     // check for duplicate usernames in the db
     const duplicate = await User.findOne({ email });

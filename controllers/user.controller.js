@@ -3,6 +3,8 @@ const ApiError = require("../utils/ApiError");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const CONFIG = require("../config");
+const queryString = require('querystring');
+const Chat = require("../models/chat.model.js");
 
 exports.updateOne = async (req, res, next) => {
     const {
@@ -74,10 +76,16 @@ exports.findOne = async (req, res, next) => {
 }
 
 exports.findMany = async (req, res, next) => {
-    const query = req.query.new;
-    const users = query
-        ? await User.find().sort({ _id: -1 }).limit(5)
-        : await User.find();
+    const { filter, project } = req.body;
+    const users = await User.find(filter, project).lean();
+    for await (const user of users) {
+        const chats = await Chat.find({ users: user._id });
+        for (const chat of chats) {
+            if (chat && chat.conversations.length > 0) {
+                user.latestChat = chat;
+            }
+        }
+    }
     res.status(200).json(users);
 }
 

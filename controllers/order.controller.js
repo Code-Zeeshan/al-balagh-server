@@ -153,7 +153,6 @@ exports.findMany = async (req, res, next) => {
             },
         },
     ]);
-    console.log(JSON.stringify(orders, 0, 4));
     res.status(200).json(orders);
 }
 
