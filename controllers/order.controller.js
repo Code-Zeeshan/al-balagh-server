@@ -49,9 +49,14 @@ exports.findByUser = async (req, res, next) => {
 // //GET ALL
 
 exports.findMany = async (req, res, next) => {
-    // const orders = await Order.find();
+    const { query } = req;
     const orders = await Order.aggregate([
-        // { $match: { createdAt: { $gte: previousMonth } } },
+        {
+            $match: {
+                ...query, $expr: { $gt: [{ $size: "$products" }, 0] }
+
+            }
+        },
         {
             $unwind: "$products"
         },
@@ -63,7 +68,7 @@ exports.findMany = async (req, res, next) => {
                     {
                         $match: {
                             $expr: {
-                                $eq: ["$$product_id", "$_id"]
+                                $eq: ["$_id", "$$product_id"]
                             }
                         }
                     },
@@ -124,7 +129,7 @@ exports.findMany = async (req, res, next) => {
                 address: "$userId.address",
                 email: "$userId.email",
                 city: "$userId.city",
-                products: {
+                product: {
                     imageURL: "$products.imageURL",
                     quantity: "$products.quantity",
                     title: "$products.title",
@@ -137,16 +142,16 @@ exports.findMany = async (req, res, next) => {
         {
             $group: {
                 _id: {
+                    orderId: "$_id",
                     userId: "$userId",
                     name: "$name",
                     address: "$address",
                     email: "$email",
                     city: "$city"
                 },
-                orders: {
+                array: {
                     $addToSet: {
-                        products: "$products",
-                        // userId: "$userId._id",
+                        order: "$$ROOT",
                     }
                 },
                 total: { $sum: "$amount" }
@@ -157,12 +162,18 @@ exports.findMany = async (req, res, next) => {
 }
 
 exports.dispatchEmail = async (req, res, next) => {
-    const { state, name, email } = req.body;
-    // const { name, email } = await User.findById(userId, { email: 1, name: 1 });
-
-    const subject = `Order ${state}`;
+    const { orderId, status, name, email } = req.body;
+    const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        {
+            $set: req.body,
+        },
+        { new: true }
+    );
+    console.log("updatedOrder", updatedOrder);
+    const subject = `Order ${status}`;
     const body = `Dear ${name},<br>
-                Your order has been ${state}`;
+                Your order has been ${status}`;
     await sendEmail(
         email,
         subject,
