@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema(
     size: { type: Array },
     color: { type: Array },
     price: { type: Number, required: true },
-    quantity: { type: Number, required: true },
+    quantity: { type: Number,  min: 0, required: true },
     imageURL: { type: String, required: true },
     cloudinaryId: { type: String, required: true },
     // inStock: { type: Boolean, default: true },

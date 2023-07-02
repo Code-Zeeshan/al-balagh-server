@@ -1,4 +1,5 @@
 const Order = require("../models/order.model.js");
+const Product = require("../models/product.model.js");
 const User = require("../models/user.model.js");
 const ApiError = require("../utils/ApiError");
 const sendEmail = require("../utils/sendEmail");
@@ -171,6 +172,23 @@ exports.dispatchEmail = async (req, res, next) => {
         { new: true }
     );
     console.log("updatedOrder", updatedOrder);
+    if (status === "accepted") {
+        const bulkOperations = [];
+        for (const product of updatedOrder.products) {
+            const updateOperation = {
+                updateOne: {
+                    filter: { _id: product.productId },
+                    update: {
+                        $inc: { quantity: -product.quantity },
+                        // $max: { quantity: 0 },
+                    }
+                },
+            };
+            bulkOperations.push(JSON.stringify(updateOperation, null, 4));
+        }
+        // console.log("updateOperation", bulkOperations);
+        Product.bulkWrite(bulkOperations);
+    }
     const subject = `Order ${status}`;
     const body = `Dear ${name},<br>
                 Your order has been ${status}`;
