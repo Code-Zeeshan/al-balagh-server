@@ -1,5 +1,6 @@
 const Order = require("../models/order.model.js");
 const Product = require("../models/product.model.js");
+const Cart = require("../models/cart.model.js");
 const User = require("../models/user.model.js");
 const ApiError = require("../utils/ApiError");
 const sendEmail = require("../utils/sendEmail");
@@ -20,6 +21,7 @@ exports.addOne = async (req, res, next) => {
         amount
     });
     const savedOrder = await newOrder.save();
+    const cart = await Cart.deleteOne({userId});
     res.status(200).json(savedOrder);
 }
 
@@ -171,7 +173,6 @@ exports.dispatchEmail = async (req, res, next) => {
         },
         { new: true }
     );
-    console.log("updatedOrder", updatedOrder);
     if (status === "accepted") {
         const bulkOperations = [];
         for (const product of updatedOrder.products) {
